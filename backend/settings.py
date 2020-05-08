@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     # 3rd party 
     'rest_framework',
     # local
-    'authentication'
+    'core',
+    'authentication',
+    'profiles'
 ]
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'authentication.exceptions.core_exception_handler',

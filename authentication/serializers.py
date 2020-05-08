@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
+from profiles.serializers import ProfileSerializer
 from .models import User
 
 
@@ -66,10 +67,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     # password must be at least 6 characters long but no more than 128
     password = serializers.CharField(min_length=6, max_length=128, write_only=True)
-
+    profile = ProfileSerializer(write_only=True)
+    bio = serializers.CharField(source='profile.bio', read_only=True)
+    image = serializers.CharField(source='profile.image', read_only=True)
     class Meta:
         model = User
-        fields = ('email', 'username', 'password', 'token', )
+        fields = ('email', 'username', 'password', 'token', 'profile', 'bio', 'image', )
 
         read_only_fields = ('token', )
     
@@ -80,14 +83,21 @@ class UserSerializer(serializers.ModelSerializer):
         # Remove the password field from validated_data before iterating over it
 
         password = validated_data.pop('password', None)
+        profile_data = validated_data.pop('profile', {})
         for (key, value) in validated_data.items():
             # For the keys remaining in `validated_data`, wset them on the current `USER` isntance one at a time.
             setattr(instance, key, value)
         
+
         if password is not None:
             # now user the django's function for hashing and salting password
             instance.set_password(password)
         
         instance.save()
+
+        for (key, value) in profile_data.items():
+            setattr(instance.profile, key, value)
+
+        instance.profile.save()
 
         return instance # user

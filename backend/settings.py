@@ -38,12 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # 3rd party 
+
+    # 3rd party
     'rest_framework',
+    'django_extensions',
     # local
     'core',
     'authentication',
-    'profiles'
+    'profiles',
+    'articles'
 ]
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'authentication.exceptions.core_exception_handler',

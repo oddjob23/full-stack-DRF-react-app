@@ -4,16 +4,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveUpdateAPIView
 
+
 from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer
 from .renderers import UserJSONRenderer
 
 # Create your views here.
+
 
 class RegistrationAPIView(APIView):
     # property which defines who can use this endpoint
     permission_classes = (AllowAny, )
     serializer_class = RegistrationSerializer
     renderer_classes = (UserJSONRenderer, )
+
     def post(self, request):
         user = request.data.get('user', {})
 
@@ -42,17 +45,16 @@ class LoginAPIView(APIView):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated, ) 
+    permission_classes = (IsAuthenticated, )
     renderer_classes = (UserJSONRenderer, )
     serializer_class = UserSerializer
-
 
     def retrieve(self, request, *args, **kwargs):
         # just serialize User object to JSON
         serializer = self.serializer_class(request.user)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def update(self, request, *args, **kwargs):
         # SERIALIZER - VALIDATE - SAVE pattern
         user_data = request.data.get('user', {})
@@ -66,7 +68,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
             }
         }
 
-        serializer = self.serializer_class(request.user, data=serializer_data, partial=True)
+        serializer = self.serializer_class(
+            request.user, data=serializer_data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
